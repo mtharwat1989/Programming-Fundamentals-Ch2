@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>منصة عبدالعزيز المعشوق | مراجعة أساسيات تطوير البرمجيات Chapter 2</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Tajawal:wght@400;500;700;800&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script>
+tailwind.config = { theme:{ extend:{ colors:{ gold:{DEFAULT:'#D4AF37',light:'#F5D67B',dark:'#8C6A00'}, royal:{900:'#080D29',800:'#0E1642',700:'#162066',600:'#1E2C8A'} }, fontFamily:{ cairo:['Cairo','sans-serif'], taj:['Tajawal','sans-serif'], pop:['Poppins','sans-serif'] } } } }
+</script>
+<style>
+*{font-family:'Cairo','Tajawal',sans-serif}
+body{background:#070B24;color:#fff;overflow-x:hidden}
+.gold-text{background:linear-gradient(135deg,#FFF6C8 0%,#F5D67B 20%,#D4AF37 45%,#FFF0A0 60%,#B8860B 80%,#F5D67B 100%);-webkit-background-clip:text;background-clip:text;color:transparent;background-size:200% auto;animation:shine 4s linear infinite}
+@keyframes shine{to{background-position:200% center}}
+.glass{background:linear-gradient(145deg,rgba(255,255,255,.09),rgba(255,255,255,.03));backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border:1px solid rgba(212,175,55,.28)}
+.gold-border{position:relative;border:1px solid rgba(212,175,55,.5)}
+.gold-border::before{content:'';position:absolute;inset:-1px;border-radius:inherit;padding:1px;background:linear-gradient(135deg,#F5D67B,#8C6A00,#FFF6C8,#B8860B);-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;opacity:.9}
+.btn-gold{background:linear-gradient(135deg,#F8E28A 0%,#D4AF37 35%,#A67C00 70%,#F5D67B 100%);background-size:200% auto;color:#1a1400;font-weight:900;box-shadow:0 8px 30px rgba(212,175,55,.4),inset 0 1px 0 rgba(255,255,255,.7);transition:.35s}
+.btn-gold:hover{background-position:left center;transform:translateY(-2px) scale(1.02);box-shadow:0 15px 45px rgba(212,175,55,.6)}
+.btn-ghost{border:1px solid rgba(212,175,55,.4);transition:.3s}
+.btn-ghost:hover{background:rgba(212,175,55,.12);border-color:#D4AF37}
+.blob{position:fixed;border-radius:50%;filter:blur(90px);opacity:.35;pointer-events:none;z-index:0;animation:float 12s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-40px) scale(1.08)}}
+#stars{position:fixed;inset:0;z-index:0;pointer-events:none}
+.opt{transition:.25s;text-align:right;width:100%;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.05);border-radius:16px;padding:14px 16px;display:flex;gap:12px;align-items:flex-start;cursor:pointer;position:relative;overflow:hidden}
+.opt:hover:not(:disabled){border-color:#D4AF37;background:rgba(212,175,55,.1);transform:translateY(-2px)}
+.opt:disabled{cursor:default}
+.opt.correct{border-color:#22c55e!important;background:linear-gradient(135deg,rgba(34,197,94,.25),rgba(34,197,94,.1))!important;box-shadow:0 0 25px rgba(34,197,94,.4)}
+.opt.wrong{border-color:#ef4444!important;background:linear-gradient(135deg,rgba(239,68,68,.25),rgba(239,68,68,.1))!important;box-shadow:0 0 25px rgba(239,68,68,.35)}
+.opt.dim{opacity:.45}
+.opt-letter{flex-shrink:0;width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:900;background:linear-gradient(135deg,#D4AF37,#8C6A00);color:#1a1400}
+.shake{animation:shake .5s}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-10px)}40%{transform:translateX(10px)}60%{transform:translateX(-7px)}80%{transform:translateX(7px)}}
+.pop{animation:pop .5s cubic-bezier(.68,-.55,.265,1.55)}
+@keyframes pop{0%{transform:scale(.8);opacity:0}100%{transform:scale(1);opacity:1}}
+.glow-pulse{animation:glowP 2s infinite}
+@keyframes glowP{0%,100%{box-shadow:0 0 20px rgba(212,175,55,.4)}50%{box-shadow:0 0 45px rgba(212,175,55,.8)}}
+.progress-gold{background:linear-gradient(90deg,#8C6A00,#D4AF37,#FFF6C8,#D4AF37);background-size:200% auto;animation:shine 2.5s linear infinite}
+.pal-btn{width:42px;height:42px;border-radius:12px;font-weight:800;font-size:14px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.06);transition:.25s}
+.pal-btn:hover{transform:scale(1.1);border-color:#D4AF37}
+.pal-btn.current{border:2px solid #F5D67B;box-shadow:0 0 18px rgba(212,175,55,.7);transform:scale(1.12)}
+.pal-btn.ok{background:linear-gradient(135deg,#16a34a,#15803d);border-color:#22c55e}
+.pal-btn.bad{background:linear-gradient(135deg,#dc2626,#991b1b);border-color:#ef4444}
+.pal-btn.skip{background:rgba(245,214,123,.2);border-color:#D4AF37}
+.ar-box{background:linear-gradient(135deg,rgba(212,175,55,.16),rgba(212,175,55,.06));border:1px dashed rgba(212,175,55,.6);border-radius:14px}
+.feedback-ok{background:linear-gradient(135deg,rgba(34,197,94,.2),rgba(34,197,94,.08));border:1px solid #22c55e}
+.feedback-bad{background:linear-gradient(135deg,rgba(239,68,68,.2),rgba(239,68,68,.08));border:1px solid #ef4444}
+.score-ring{transform:rotate(-90deg)}
+.score-ring circle{transition:stroke-dashoffset 2s ease}
+.trophy-float{animation:trophyF 3s ease-in-out infinite}
+@keyframes trophyF{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-14px) rotate(3deg)}}
+#celebrateOverlay{transition:.4s}
+.crown-shine{position:relative;overflow:hidden}
+.crown-shine::after{content:'';position:absolute;top:0;left:-80%;width:50%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.5),transparent);transform:skewX(-20deg);animation:sheen 3s infinite}
+@keyframes sheen{0%{left:-80%}60%,100%{left:130%}}
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-track{background:#0E1642}
+::-webkit-scrollbar-thumb{background:linear-gradient(#D4AF37,#8C6A00);border-radius:10px}
+.toast{animation:slideIn .4s cubic-bezier(.68,-.55,.265,1.55)}
+@keyframes slideIn{from{transform:translateY(30px) scale(.9);opacity:0}to{transform:translateY(0) scale(1);opacity:1}}
+@media print{body *{visibility:hidden}#reportSection,#reportSection *{visibility:visible}#reportSection{position:absolute;top:0;right:0;left:0;background:#fff!important;color:#000!important} .no-print{display:none!important}}
+.chapter-badge{background:linear-gradient(135deg,rgba(212,175,55,.2),rgba(212,175,55,.05));border:1px solid rgba(212,175,55,.4)}
+.hero-pattern{background-image:radial-gradient(rgba(212,175,55,.15) 1px,transparent 1px);background-size:22px 22px}
+.streak-fire{animation:fire .8s infinite alternate}
+@keyframes fire{from{transform:scale(1)}to{transform:scale(1.15) rotate(-5deg)}}
+
+.cm-node{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);border-radius:14px;padding:10px 12px;transition:.25s}
+.cm-node:hover{border-color:#D4AF37;background:rgba(212,175,55,.1);transform:translateY(-2px)}
+.cm-node b{display:block;color:#F5D67B;font-family:'Poppins','Cairo',sans-serif;font-size:13.5px;direction:ltr;text-align:left}
+.cm-node span{display:block;font-size:12.5px;line-height:1.75;color:rgba(255,255,255,.82);margin-top:2px}
+.cm-card{position:relative;border-radius:22px;padding:18px;transition:.3s}
+.cm-card::before{content:'';position:absolute;top:-22px;right:50%;width:2px;height:22px;background:linear-gradient(#D4AF37,transparent);opacity:.7}
+.cm-card.done{box-shadow:0 0 30px rgba(34,197,94,.35);border-color:#22c55e!important}
+.cm-flow{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px;direction:ltr;font-family:'Poppins',sans-serif;font-weight:600;font-size:12.5px}
+.cm-flow .st{padding:7px 12px;border-radius:12px;background:linear-gradient(135deg,#1E2C8A,#162066);border:1px solid rgba(212,175,55,.5)}
+.cm-flow .ar{color:#F5D67B;font-weight:900}
+@keyframes pulseLine{0%,100%{opacity:.5}50%{opacity:1}}
+</style>
+</head>
+<body>
+<canvas id="stars"></canvas>
+<div class="blob" style="width:520px;height:520px;background:#D4AF37;top:-150px;right:-150px"></div>
+<div class="blob" style="width:420px;height:420px;background:#1E2C8A;bottom:10%;left:-120px;animation-delay:2s"></div>
+<div class="blob" style="width:300px;height:300px;background:#7C3AED;top:40%;right:30%;opacity:.2;animation-delay:4s"></div>
+
+<!-- PRELOADER -->
+<div id="preloader" class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#070B24] transition-opacity duration-700">
+<div class="w-24 h-24 rounded-3xl btn-gold flex items-center justify-center text-5xl glow-pulse">👑</div>
+<h1 class="mt-6 text-2xl font-black gold-text">منصة عبدالعزيز المعشوق الذهبية</h1>
+<p class="text-white/60 mt-2">جاري تجهيز تجربة ملكية تليق ببطل البرمجة...</p>
+<div class="w-64 h-2 mt-6 rounded-full bg-white/10 overflow-hidden"><div id="loadBar" class="h-full progress-gold rounded-full" style="width:0%"></div></div>
+</div>
+
+<!-- HEADER -->
+<header class="sticky top-0 z-50 glass border-b border-[#D4AF37]/30">
+<div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
+<div class="flex items-center gap-3">
+<div class="w-12 h-12 rounded-2xl btn-gold flex items-center justify-center text-2xl crown-shine">👑</div>
+<div><div class="font-black text-lg leading-none">عبدالعزيز <span class="gold-text">المعشوق</span></div><div class="text-[12px] text-white/60">أساسيات تطوير البرمجيات • CH2 • كويز التفوق</div></div>
+</div>
+<div class="hidden md:flex items-center gap-2 text-sm">
+<a href="#home" class="px-4 py-2 rounded-xl hover:bg-white/10 transition">الرئيسية</a>
+<a href="#conceptMap" class="px-4 py-2 rounded-xl hover:bg-white/10 transition">خارطة المفاهيم</a>
+<a href="#quizSection" class="px-4 py-2 rounded-xl hover:bg-white/10 transition">الاختبار</a>
+<a href="#reportSection" class="px-4 py-2 rounded-xl hover:bg-white/10 transition">التقرير</a>
+</div>
+<div class="flex items-center gap-2">
+<div class="hidden sm:flex items-center gap-2 glass rounded-xl px-3 py-2 text-sm"><i class="fa-solid fa-bolt text-[#F5D67B]"></i><span id="hdrScore" class="font-black">0</span><span class="text-white/40">نقطة</span></div>
+<button onclick="toggleSound()" id="soundBtn" class="w-11 h-11 rounded-xl btn-ghost flex items-center justify-center text-xl">🔊</button>
+</div>
+</div>
+<div class="h-1 bg-white/10"><div id="topProgress" class="h-full progress-gold transition-all duration-500" style="width:0%"></div></div>
+</header>
+
+<!-- HERO -->
+<section id="home" class="relative z-10 max-w-7xl mx-auto px-4 pt-10 pb-6">
+<div class="grid lg:grid-cols-2 gap-6 items-stretch">
+<div class="glass gold-border rounded-3xl p-7 md:p-10 relative overflow-hidden hero-pattern">
+<div class="absolute top-0 left-0 w-full h-1 progress-gold"></div>
+<div class="inline-flex items-center gap-2 chapter-badge rounded-full px-4 py-2 text-sm font-bold text-[#F5D67B]"><span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span> الفصل الثاني • مراجعة شاملة استعدادًا للكويز • 20 سؤالًا (10 صح/خطأ + 10 اختياري)</div>
+<h1 class="text-3xl md:text-5xl font-black leading-[1.25] mt-5">أهلاً بالبطل <span class="gold-text">عبدالعزيز المعشوق</span> 🏆<br><span class="text-xl md:text-2xl font-bold text-white/90">رحلتك الملكية نحو العلامة الكاملة في أساسيات تطوير البرمجيات</span></h1>
+<p class="text-white/70 mt-4 leading-8">راجع خارطة المفاهيم أولًا، ثم أجب على الأسئلة التفاعلية بالترتيب. لو أجبت صح سأقول لك <b class="text-[#F5D67B]">«أحسنت عبدالعزيز كمّل يا بطل»</b> مع احتفالات وأصوات تحفيزية 🎉 ولو أخطأت سأقول <b>«حاول مرة أخرى»</b> وأمنحك فرصة للتعلم. بجانب كل سؤال زر <b class="text-[#F5D67B]">🌐 ترجم</b> يظهر الترجمة العربية بجانب السؤال والإجابات مباشرة. وفي النهاية تقرير ملكي مفصّل.</p>
+<div class="flex flex-wrap gap-3 mt-6">
+<button onclick="document.getElementById('conceptMap').scrollIntoView({behavior:'smooth'})" class="btn-gold rounded-2xl px-8 py-4 text-lg"><i class="fa-solid fa-play ml-2"></i> ابدأ بخارطة المفاهيم</button>
+<button onclick="document.getElementById('conceptMap').scrollIntoView({behavior:'smooth'})" class="btn-ghost rounded-2xl px-6 py-4 font-bold">🧠 خارطة المفاهيم</button>
+<button onclick="translateAllToggle()" class="btn-ghost rounded-2xl px-6 py-4 font-bold">🌐 ترجمة الكل</button>
+<button onclick="document.getElementById('paletteCard').scrollIntoView({behavior:'smooth'})" class="btn-ghost rounded-2xl px-6 py-4 font-bold">🗺️ خريطة الأسئلة</button>
+</div>
+<div class="grid grid-cols-3 gap-3 mt-7">
+<div class="rounded-2xl bg-white/5 border border-white/10 p-4 text-center"><div class="text-2xl font-black gold-text">20</div><div class="text-xs text-white/60 font-bold">سؤالًا مركّزًا</div></div>
+<div class="rounded-2xl bg-white/5 border border-white/10 p-4 text-center"><div class="text-2xl font-black gold-text">10+10</div><div class="text-xs text-white/60 font-bold">صح/خطأ + اختياري</div></div>
+<div class="rounded-2xl bg-white/5 border border-white/10 p-4 text-center"><div class="text-2xl font-black gold-text" id="bestScoreHero">0%</div><div class="text-xs text-white/60 font-bold">أفضل نتيجة لك</div></div>
+</div>
+</div>
+
+<div class="flex flex-col gap-6">
+<div class="glass gold-border rounded-3xl p-6 text-center relative overflow-hidden crown-shine">
+<div class="trophy-float text-7xl">🏆</div>
+<h3 class="font-black text-xl mt-2">بطاقة البطل الذهبية</h3>
+<div class="flex items-center justify-center gap-3 mt-4">
+<div class="w-16 h-16 rounded-2xl flex items-center justify-center text-3xl font-black btn-gold">ع</div>
+<div class="text-right"><div class="font-black">عبدالعزيز المعشوق</div><div class="text-xs text-[#F5D67B] font-bold">⭐ المستوى <span id="levelNum">1</span> • <span id="xpNum">0</span> XP</div><div class="w-40 h-2 bg-white/10 rounded-full mt-2 overflow-hidden"><div id="xpBar" class="h-full progress-gold" style="width:0%"></div></div></div>
+</div>
+<div class="grid grid-cols-3 gap-2 mt-5 text-sm">
+<div class="rounded-xl bg-black/30 border border-white/10 p-3"><div class="font-black text-lg" id="statCorrect">0</div><div class="text-green-400 text-xs font-bold">✅ صحيحة</div></div>
+<div class="rounded-xl bg-black/30 border border-white/10 p-3"><div class="font-black text-lg" id="statWrong">0</div><div class="text-red-400 text-xs font-bold">❌ خاطئة</div></div>
+<div class="rounded-xl bg-black/30 border border-white/10 p-3"><div class="font-black text-lg" id="statStreak">0 🔥</div><div class="text-orange-300 text-xs font-bold">سلسلة التوهج</div></div>
+</div>
+<div class="mt-4 flex items-center justify-center gap-2 text-sm bg-black/30 rounded-xl p-3 border border-[#D4AF37]/30"><i class="fa-regular fa-clock text-[#F5D67B]"></i> الوقت: <b id="timerHero">00:00</b> <span class="text-white/40">|</span> <span>السؤال <b id="heroQpos" class="text-[#F5D67B]">1</b> / 20</span></div>
+</div>
+
+<div class="grid grid-cols-2 gap-4">
+<button onclick="setMode('train')" id="modeTrain" class="glass rounded-2xl p-5 text-right border-2 border-[#D4AF37] transition hover:scale-[1.02]">
+<div class="text-2xl">🎓</div><div class="font-black mt-1">وضع التدريب البطولي</div><div class="text-xs text-white/60 mt-1 leading-5">محاولات للتعلم + شرح + التقييم على أول إجابة</div><div class="text-[11px] mt-2 font-black text-green-400">● مُفعّل الآن</div>
+</button>
+<button onclick="setMode('exam')" id="modeExam" class="glass rounded-2xl p-5 text-right border-2 border-transparent transition hover:scale-[1.02]">
+<div class="text-2xl">⏱️</div><div class="font-black mt-1">وضع الكويز الحقيقي</div><div class="text-xs text-white/60 mt-1 leading-5">محاولة واحدة فقط بدون رجعة مثل الاختبار</div><div class="text-[11px] mt-2 font-black text-white/40" id="examLabel">○ اضغط للتفعيل</div>
+</button>
+</div>
+</div>
+</div>
+
+<!-- QUOTE -->
+<div class="mt-6 glass rounded-2xl px-6 py-4 flex items-center gap-4 border-r-4 border-[#D4AF37]">
+<div class="text-3xl">💬</div><div><div class="font-black text-[#F5D67B]" id="quoteText">«SDLC = تحليل ← تصميم ← تطوير ← تنفيذ ← صيانة»</div><div class="text-xs text-white/40">حكمة تحفيزية تتغير كل 8 ثوانٍ لإبقائك مشتعلًا يا عبدالعزيز 🔥</div></div>
+</div>
+</section>
+
+
+<!-- CONCEPT MAP -->
+<section id="conceptMap" class="relative z-10 max-w-7xl mx-auto px-4 py-6">
+<div class="glass gold-border rounded-3xl p-5 md:p-8 relative overflow-hidden">
+<div class="absolute top-0 left-0 w-full h-1 progress-gold"></div>
+<div class="flex flex-wrap items-center justify-between gap-3" id="cmHead">
+<div><div id="cmBadge" class="inline-flex items-center gap-2 chapter-badge rounded-full px-4 py-1.5 text-xs font-bold text-[#F5D67B]"></div>
+<h2 id="cmTitle" class="text-2xl md:text-4xl font-black mt-3 font-pop"></h2>
+<p id="cmDesc" class="text-white/65 mt-2 text-sm leading-7 max-w-2xl"></p></div>
+<div class="flex flex-wrap items-center gap-3">
+<button id="cmTrBtn" onclick="toggleCM()" class="btn-gold rounded-xl px-6 py-3 font-black"></button>
+<div class="glass rounded-2xl px-5 py-3 text-center"><div id="cmProgLabel" class="text-xs text-white/60 font-bold"></div><div class="text-2xl font-black gold-text"><span id="cmDone">0</span> / 6</div><div class="w-32 h-2 bg-white/10 rounded-full mt-1 overflow-hidden"><div id="cmBar" class="h-full progress-gold" style="width:0%"></div></div></div>
+</div>
+</div>
+
+<div class="flex flex-col items-center mt-8">
+<div class="btn-gold rounded-3xl px-8 py-4 text-center crown-shine glow-pulse"><div class="text-2xl font-black" dir="ltr">Fundamentals of Software Development</div><div class="text-xs font-black opacity-80" dir="ltr">Programming Fundamentals • Chapter 2</div></div>
+<div class="w-0.5 h-8" style="background:linear-gradient(#D4AF37,transparent)"></div>
+<div id="cmGoalsBox" class="glass rounded-2xl px-5 py-3 mt-1 max-w-3xl w-full">
+<div id="cmGoalsT" class="text-center text-xs font-black text-[#F5D67B] mb-1"></div>
+<div id="cmGoals" class="text-[12.5px] leading-7 text-white/80 text-center"></div>
+</div>
+</div>
+
+<div id="cmGrid" class="grid md:grid-cols-2 xl:grid-cols-3 gap-x-5 gap-y-10 mt-10"></div>
+
+<div class="mt-8 rounded-2xl p-4 bg-black/30 border border-[#D4AF37]/40 text-center">
+<div id="cmQuickT" class="font-black text-[#F5D67B]"></div>
+<div id="cmQuickFlow" class="cm-flow mt-3"></div>
+<button onclick="scrollToQuiz()" class="btn-gold rounded-2xl px-10 py-4 text-lg mt-5"><i class="fa-solid fa-play ml-2"></i> أنا جاهز — ابدأ حل الأسئلة</button>
+</div>
+</div>
+</section>
+
+<!-- QUIZ -->
+<section id="quizSection" class="relative z-10 max-w-7xl mx-auto px-4 py-6">
+<div class="grid lg:grid-cols-[1fr_300px] gap-6 items-start">
+
+<div class="glass gold-border rounded-3xl overflow-hidden">
+<div class="p-4 md:p-5 flex flex-wrap items-center justify-between gap-3 bg-black/20 border-b border-[#D4AF37]/20">
+<div class="flex items-center gap-2 flex-wrap">
+<span id="qCounter" class="btn-gold rounded-xl px-4 py-2 text-sm">السؤال 1 / 20</span>
+<span id="qPageBadge" class="rounded-xl px-3 py-2 text-sm font-bold bg-white/10 border border-white/15">📄 صفحة 3</span>
+<span id="qTypeBadge" class="rounded-xl px-3 py-2 text-sm font-bold bg-purple-500/20 border border-purple-400/40 text-purple-200">صح / خطأ</span>
+<span id="attemptBadge" class="rounded-xl px-3 py-2 text-sm font-bold bg-white/10 border border-white/15 hidden">المحاولة 2</span>
+</div>
+<div class="flex items-center gap-2">
+<button onclick="toggleBookmark()" id="bmBtn" class="w-10 h-10 rounded-xl btn-ghost flex items-center justify-center" title="حفظ في المفضلة">🤍</button>
+<button onclick="toggleTranslateCurrent()" id="trBtn" class="rounded-xl px-4 py-2.5 font-black text-sm btn-gold">🌐 ترجم</button>
+</div>
+</div>
+
+<div class="h-2 bg-white/10"><div id="quizProgress" class="h-full progress-gold transition-all duration-500" style="width:2%"></div></div>
+
+<div id="qCard" class="p-5 md:p-8">
+<div class="flex items-center gap-2 text-xs text-white/40 font-bold mb-3"><i class="fa-solid fa-book-open text-[#D4AF37]"></i> أسئلة مستخرجة من شرائح الفصل (بالترتيب) — أجب لتكمل التحدي</div>
+<h2 id="qEn" dir="ltr" class="text-left font-pop font-semibold text-lg md:text-2xl leading-9 bg-black/30 border border-white/10 rounded-2xl p-5"></h2>
+<div id="qArBox" class="ar-box p-4 mt-3 hidden pop"><div class="text-[11px] font-black text-[#F5D67B] mb-1">🇸🇦 الترجمة العربية المباشرة:</div><div id="qAr" class="font-bold leading-8 text-[15px] md:text-lg"></div></div>
+<div id="optsGrid" class="grid gap-3 mt-5"></div>
+<div id="feedbackBox" class="mt-5 hidden rounded-2xl p-5 text-center font-black text-lg pop"></div>
+<div id="explainBox" class="mt-3 hidden rounded-2xl p-4 bg-blue-500/10 border border-blue-400/40 text-sm leading-7"></div>
+<div class="flex flex-wrap items-center justify-between gap-3 mt-6">
+<div class="flex gap-2">
+<button onclick="prevQ()" class="btn-ghost rounded-xl px-5 py-3 font-bold">→ السابق</button>
+<button onclick="nextQ()" class="btn-gold rounded-xl px-7 py-3">التالي ←</button>
+</div>
+<div class="flex gap-2">
+<button onclick="skipQ()" class="btn-ghost rounded-xl px-4 py-3 text-sm font-bold">⏭️ تخطي</button>
+<button onclick="confirmFinish()" class="rounded-xl px-5 py-3 text-sm font-black bg-gradient-to-l from-red-500 to-orange-500 hover:scale-105 transition shadow-lg">🏁 إنهاء و عرض النتيجة</button>
+</div>
+</div>
+</div>
+</div>
+
+<div class="flex flex-col gap-5">
+<div id="paletteCard" class="glass rounded-3xl p-5 gold-border">
+<h3 class="font-black flex items-center gap-2"><span class="text-xl">🗺️</span> خريطة المعركة <span class="text-xs font-bold text-white/40">(20 سؤالًا)</span></h3>
+<div class="flex flex-wrap gap-2 mt-3 text-[11px] font-bold">
+<button onclick="setFilter('all')" class="filter-btn px-3 py-1.5 rounded-lg bg-[#D4AF37] text-black" data-f="all">الكل</button>
+<button onclick="setFilter('un')" class="filter-btn px-3 py-1.5 rounded-lg bg-white/10" data-f="un">غير مجاب</button>
+<button onclick="setFilter('ok')" class="filter-btn px-3 py-1.5 rounded-lg bg-white/10" data-f="ok">صح</button>
+<button onclick="setFilter('bad')" class="filter-btn px-3 py-1.5 rounded-lg bg-white/10" data-f="bad">خطأ</button>
+<button onclick="setFilter('bm')" class="filter-btn px-3 py-1.5 rounded-lg bg-white/10" data-f="bm">⭐ مفضلة</button>
+</div>
+<div id="palette" class="grid grid-cols-5 gap-2 mt-4 max-h-[380px] overflow-y-auto p-1"></div>
+<div class="mt-4 text-xs leading-6 text-white/60 bg-black/30 rounded-xl p-3 border border-white/10">🟩 صح من أول مرة • 🟥 يحتاج مراجعة • 🟨 متخطّى • ✨ الذهبي = سؤالك الحالي<br>💡 التقييم النهائي يعتمد على <b class="text-[#F5D67B]">أول إجابة</b> في وضع التدريب.</div>
+<button onclick="confirmFinish()" class="btn-gold w-full rounded-xl py-3 mt-3 font-black">📊 اعرض تقرير عبدالعزيز النهائي</button>
+</div>
+
+<div class="glass rounded-3xl p-5">
+<h3 class="font-black">⚔️ أسلحة البطل</h3>
+<div class="grid grid-cols-2 gap-2 mt-3 text-sm font-bold">
+<button onclick="translateAllToggle()" class="btn-ghost rounded-xl py-3">🌐 ترجمة الكل</button>
+<button onclick="toggleSound()" class="btn-ghost rounded-xl py-3">🔊 الصوت</button>
+<button onclick="restartQuiz()" class="btn-ghost rounded-xl py-3">🔄 من جديد</button>
+<button onclick="reviewBookmarks()" class="btn-ghost rounded-xl py-3">⭐ المفضلة</button>
+</div>
+<div class="mt-3 rounded-xl bg-black/30 border border-[#D4AF37]/30 p-3 text-xs leading-6"><b class="text-[#F5D67B]">نصيحة ذهبية يا عبدالعزيز:</b> استخدم لوحة المفاتيح: <b>1-4</b> للإجابة • <b>T</b> للترجمة • <b>→ ←</b> للتنقل.</div>
+</div>
+</div>
+</div>
+</section>
+
+<!-- REPORT -->
+<section id="reportSection" class="relative z-10 max-w-7xl mx-auto px-4 py-8 hidden">
+<div class="glass gold-border rounded-3xl p-6 md:p-10 text-center relative overflow-hidden">
+<div class="absolute top-0 left-0 w-full h-1.5 progress-gold"></div>
+<div class="trophy-float text-8xl">🏆</div>
+<h2 class="text-3xl md:text-4xl font-black mt-3">تقرير البطل <span class="gold-text">عبدالعزيز المعشوق</span></h2>
+<p id="reportSubtitle" class="text-white/60 mt-2 font-bold"></p>
+<div class="grid md:grid-cols-3 gap-6 mt-8 items-center">
+<div class="flex flex-col items-center">
+<div class="relative w-52 h-52">
+<svg class="score-ring w-52 h-52" viewBox="0 0 120 120"><circle cx="60" cy="60" r="52" fill="none" stroke="rgba(255,255,255,.1)" stroke-width="12"/><circle id="scoreCircle" cx="60" cy="60" r="52" fill="none" stroke="url(#gg)" stroke-width="12" stroke-linecap="round" stroke-dasharray="326.7" stroke-dashoffset="326.7"/><defs><linearGradient id="gg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#F5D67B"/><stop offset="50%" stop-color="#D4AF37"/><stop offset="100%" stop-color="#FFF6C8"/></linearGradient></defs></svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center"><div id="finalPct" class="text-4xl font-black gold-text">0%</div><div class="text-xs text-white/40 font-bold">النسبة النهائية</div></div>
+</div>
+<div id="gradeBadge" class="mt-3 px-6 py-2 rounded-full font-black btn-gold"></div>
+</div>
+<div class="grid grid-cols-2 gap-3">
+<div class="rounded-2xl bg-green-500/10 border border-green-500/40 p-5"><div class="text-3xl font-black text-green-400" id="rCorrect">0</div><div class="text-xs font-bold text-green-300">✅ إجابات صحيحة</div></div>
+<div class="rounded-2xl bg-red-500/10 border border-red-500/40 p-5"><div class="text-3xl font-black text-red-400" id="rWrong">0</div><div class="text-xs font-bold text-red-300">❌ تحتاج مراجعة</div></div>
+<div class="rounded-2xl bg-white/5 border border-white/15 p-5"><div class="text-3xl font-black gold-text" id="rTime">00:00</div><div class="text-xs font-bold text-white/60">⏱️ زمن الإنجاز</div></div>
+<div class="rounded-2xl bg-white/5 border border-white/15 p-5"><div class="text-3xl font-black gold-text" id="rStreak">0</div><div class="text-xs font-bold text-white/60">🔥 أفضل سلسلة</div></div>
+</div>
+<div class="glass rounded-2xl p-4">
+<canvas id="chartDoughnut" height="220"></canvas>
+<div class="mt-2 text-xs text-white/40 font-bold">توزيع الأداء: صح / خطأ / متخطّى</div>
+<hr class="border-white/10 my-3">
+<canvas id="chartBars" height="220"></canvas>
+<div class="mt-2 text-xs text-white/40 font-bold">الأداء حسب القسم: صح/خطأ (Q1-10) مقابل اختياري (Q11-20)</div>
+</div>
+</div>
+<div id="finalMessage" class="mt-6 text-xl font-black leading-9 rounded-2xl p-5 feedback-ok"></div>
+<div class="mt-6 rounded-2xl p-5 border border-green-500/60 bg-green-500/10 text-center no-print">
+<div class="font-black text-lg">📲 إرسال تقرير الإجابات للدكتور محمد</div>
+<p class="text-white/70 text-sm mt-1 leading-7">اضغط الزر لفتح واتساب برسالة جاهزة فيها نتيجتك وأخطاءك، ثم اضغط «إرسال».</p>
+<button onclick="sendWhatsApp()" class="rounded-2xl px-8 py-4 mt-3 font-black text-lg text-white hover:scale-105 transition shadow-lg" style="background:linear-gradient(135deg,#25D366,#128C7E)"><i class="fa-brands fa-whatsapp ml-2"></i> أرسل التقرير للدكتور محمد عبر واتساب</button>
+</div>
+
+<div class="flex flex-wrap justify-center gap-3 mt-6 no-print">
+<button onclick="showOnlyWrong=false;renderReportList();toggleWrongBtn(this)" class="btn-gold rounded-xl px-6 py-3 font-black">📋 عرض الكل (20)</button>
+<button onclick="showOnlyWrong=true;renderReportList();toggleWrongBtn(this)" class="btn-ghost rounded-xl px-6 py-3 font-bold">❌ مراجعة الأخطاء فقط</button>
+<button onclick="restartQuiz()" class="btn-ghost rounded-xl px-6 py-3 font-bold">🔄 إعادة الاختبار</button>
+<button onclick="window.print()" class="btn-ghost rounded-xl px-6 py-3 font-bold">🖨️ طباعة التقرير</button>
+<button onclick="shareResult()" class="btn-ghost rounded-xl px-6 py-3 font-bold">📤 مشاركة النتيجة</button>
+<button onclick="sendWhatsApp()" class="rounded-xl px-6 py-3 font-black text-white" style="background:linear-gradient(135deg,#25D366,#128C7E)">📲 واتساب الدكتور محمد</button>
+</div>
+</div>
+
+<div class="mt-6 flex items-center gap-3">
+<div class="flex-1 h-px bg-gradient-to-l from-transparent via-[#D4AF37] to-transparent"></div>
+<h3 class="font-black text-xl whitespace-nowrap">📝 كشف الدرجات التفصيلي <span class="text-sm text-white/40">مع الإجابات النموذجية</span></h3>
+<div class="flex-1 h-px bg-gradient-to-l from-transparent via-[#D4AF37] to-transparent"></div>
+</div>
+<div id="reportList" class="grid gap-4 mt-5"></div>
+</section>
+
+<footer class="relative z-10 max-w-7xl mx-auto px-4 pb-10 pt-4 text-center text-white/40 text-sm">
+<div class="glass rounded-2xl p-5">صُنع بفخر 👑 للبطل <b class="gold-text">عبدالعزيز المعشوق</b> • مراجعة CH2 أساسيات تطوير البرمجيات (Fundamentals of Software Development) • بالتوفيق في الكويز يا بطل 🚀<br><span class="text-xs">20 سؤالًا (10 صح/خطأ + 10 اختياري) بالترتيب مع ترجمة فورية وتقرير ذكي</span></div>
+</footer>
+
+<!-- CELEBRATION TOAST -->
+<div id="toastWrap" class="fixed bottom-6 right-1/2 translate-x-1/2 z-[90] flex flex-col items-center gap-2 pointer-events-none w-[92%] max-w-md"></div>
+<div id="bigCheer" class="fixed inset-0 z-[95] hidden items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+<div class="glass gold-border rounded-3xl p-8 text-center max-w-md w-full pop crown-shine">
+<div class="text-7xl trophy-float" id="bigCheerEmoji">🎉</div>
+<h2 id="bigCheerTitle" class="text-2xl font-black gold-text mt-3">أحسنت عبدالعزيز كمّل يا بطل! 🏆</h2>
+<p id="bigCheerSub" class="text-white/70 font-bold mt-2 text-sm leading-7"></p>
+<button onclick="closeCheer()" class="btn-gold rounded-xl px-8 py-3 mt-5 font-black">واصل يا بطل 🚀</button>
+</div>
+</div>
+
+<script>
+/* ================= DATA - 20 QUESTIONS (10 TF + 10 MCQ) FROM CH2 SLIDES ================= */
+const QUESTIONS = [{"id": 1, "page": 3, "type": "tf", "en": "Software development is the process of creating software to solve problems and automate tasks.", "ar": "تطوير البرمجيات هو عملية إنشاء البرمجيات لحل المشكلات وأتمتة المهام.", "opts": {"en": ["True", "False"], "ar": ["صح", "خطأ"]}, "correct": 0, "ex": "صح: هذا هو تعريف تطوير البرمجيات في الشريحة (صفحة 3)."}, {"id": 2, "page": 3, "type": "tf", "en": "Software development includes only writing code; testing and maintenance are not part of it.", "ar": "تطوير البرمجيات يشمل كتابة الكود فقط، أما الاختبار والصيانة فليسا جزءًا منه.", "opts": {"en": ["True", "False"], "ar": ["صح", "خطأ"]}, "correct": 1, "ex": "خطأ: يشمل فهم المتطلبات وتصميم الحل وكتابة الكود واختبار البرمجيات وصيانتها (صفحة 3)."}, {"id": 3, "page": 4, "type": "tf", "en": "SDLC is a structured process used to build software systems.", "ar": "SDLC هي عملية منظمة تُستخدم لبناء أنظمة البرمجيات.", "opts": {"en": ["True", "False"], "ar": ["صح", "خطأ"]}, "correct": 0, "ex": "صح: دورة حياة تطوير البرمجيات (SDLC) عملية منظمة لبناء الأنظمة، وتقلل الأخطاء بالتخطيط قبل كتابة الكود (صفحة 4)."}, {"id": 4, "page": 5, "type": "tf", "en": "There are five steps in the SDLC.", "ar": "توجد خمس خطوات في SDLC.", "opts": {"en": ["True", "False"], "ar": ["صح", "خطأ"]}, "correct": 0, "ex": "صح: الخطوات الخمس: Problem Analysis وDesign وDevelopment وImplementation وMaintenance (صفحة 5)."}, {"id": 5, "page": 6, "type": "tf", "en": "In Phase 1 (Problem Analysis), the main goal is to write and test the code.", "ar": "في المرحلة الأولى (تحليل المشكلة) الهدف الأساسي هو كتابة الكود واختباره.", "opts": {"en": ["True", "False"], "ar": ["صح", "خطأ"]}, "correct": 1, "ex": "خطأ: في Problem Analysis نفهم المشكلة واحتياجات المستخدم ونستخدم IPO لتنظيم الحل، أما كتابة الكود فمرحلة Development (صفحة 6)."}, {"id": 6, "page": 6, "type": "tf", "en": "In the IPO model, Output is the data that the program receives.", "ar": "في نموذج IPO، المخرجات (Output) هي البيانات التي يستقبلها البرنامج.", "opts": {"en": ["True", "False"], "ar": ["صح", "خطأ"]}, "correct": 1, "ex": "خطأ: البيانات التي يستقبلها البرنامج هي Input، أما Output فهي النتائج المعروضة للمستخدم (صفحة 6)."}, {"id": 7, "page": 7, "type": "tf", "en": "In the Design phase, the solution is planned using algorithms, flowcharts, and pseudocode.", "ar": "في مرحلة التصميم (Design) يُخطَّط الحل باستخدام الخوارزميات ومخططات التدفق والشيفرة الوهمية.", "opts": {"en": ["True", "False"], "ar": ["صح", "خطأ"]}, "correct": 0, "ex": "صح: Phase 2 (Design) تعتمد على Algorithms وFlowcharts وPseudocode لتخطيط الحل (صفحة 7)."}, {"id": 8, "page": 9, "type": "tf", "en": "Phase 4 (Implementation) is the phase where the code is written and tested.", "ar": "المرحلة الرابعة (Implementation) هي التي تُكتب فيها الشيفرة وتُختبر.", "opts": {"en": ["True", "False"], "ar": ["صح", "خطأ"]}, "correct": 1, "ex": "خطأ: كتابة الكود واختباره هي مرحلة Development (المرحلة 3)، أما Implementation فهي نشر البرنامج وتدريب المستخدمين (صفحة 9)."}, {"id": 9, "page": 10, "type": "tf", "en": "Maintenance is the phase in which errors are fixed and the software is updated.", "ar": "الصيانة (Maintenance) هي المرحلة التي تُصلَح فيها الأخطاء ويُحدَّث فيها البرنامج.", "opts": {"en": ["True", "False"], "ar": ["صح", "خطأ"]}, "correct": 0, "ex": "صح: Phase 5 (Maintenance) تعني إصلاح الأخطاء وتحديث البرنامج (صفحة 10)."}, {"id": 10, "page": 13, "type": "tf", "en": "In Example 2 of the chapter, a rectangle with length = 6 cm and width = 4 cm has a perimeter of 24 cm.", "ar": "في المثال الثاني بالفصل، محيط المستطيل الذي طوله 6 سم وعرضه 4 سم يساوي 24 سم.", "opts": {"en": ["True", "False"], "ar": ["صح", "خطأ"]}, "correct": 1, "ex": "خطأ: المحيط = 2 × (6 + 4) = 20 سم. أما 24 فهي المساحة 6 × 4 في المثال الأول (صفحة 13)."}, {"id": 11, "page": 3, "type": "mcq", "en": "Which of the following is NOT part of software development as described in the chapter?", "ar": "أي مما يلي ليس جزءًا من تطوير البرمجيات كما ورد في الفصل؟", "opts": {"en": ["A. Understanding requirements", "B. Designing a solution", "C. Writing code", "D. Manufacturing computer hardware"], "ar": ["أ. فهم المتطلبات", "ب. تصميم الحل", "ج. كتابة الكود", "د. تصنيع عتاد الحاسوب"]}, "correct": 3, "ex": "الإجابة د: تطوير البرمجيات يشمل فهم المتطلبات وتصميم الحل وكتابة الكود والاختبار والصيانة، ولا يشمل تصنيع العتاد (صفحة 3)."}, {"id": 12, "page": 4, "type": "mcq", "en": "Which of the following is a reason why the SDLC is important?", "ar": "أي مما يلي سبب لأهمية دورة حياة تطوير البرمجيات (SDLC)؟", "opts": {"en": ["A. It ensures the final system matches user needs", "B. It removes the need for testing", "C. It removes the need for planning", "D. It makes software impossible to change"], "ar": ["أ. تضمن أن النظام النهائي يطابق احتياجات المستخدم", "ب. تلغي الحاجة إلى الاختبار", "ج. تلغي الحاجة إلى التخطيط", "د. تجعل تعديل البرمجيات مستحيلًا"]}, "correct": 0, "ex": "الإجابة أ: من فوائد SDLC: تقليل الأخطاء بالتخطيط قبل الكود، وتحسين الجودة بالاختبار والمراجعة، وسهولة الصيانة، ومطابقة النظام لاحتياجات المستخدم (صفحة 4)."}, {"id": 13, "page": 5, "type": "mcq", "en": "How many steps are there in the SDLC?", "ar": "كم عدد خطوات دورة حياة تطوير البرمجيات (SDLC)؟", "opts": {"en": ["A. 3", "B. 4", "C. 5", "D. 6"], "ar": ["أ. 3", "ب. 4", "ج. 5", "د. 6"]}, "correct": 2, "ex": "الإجابة ج: توجد خمس خطوات: Problem Analysis وDesign وDevelopment وImplementation وMaintenance (صفحة 5)."}, {"id": 14, "page": 5, "type": "mcq", "en": "Which option shows the SDLC phases in the correct order?", "ar": "أي خيار يعرض مراحل SDLC بالترتيب الصحيح؟", "opts": {"en": ["A. Design → Problem Analysis → Development → Implementation → Maintenance", "B. Problem Analysis → Design → Development → Implementation → Maintenance", "C. Problem Analysis → Development → Design → Maintenance → Implementation", "D. Development → Design → Problem Analysis → Implementation → Maintenance"], "ar": ["أ. التصميم ← تحليل المشكلة ← التطوير ← التنفيذ ← الصيانة", "ب. تحليل المشكلة ← التصميم ← التطوير ← التنفيذ ← الصيانة", "ج. تحليل المشكلة ← التطوير ← التصميم ← الصيانة ← التنفيذ", "د. التطوير ← التصميم ← تحليل المشكلة ← التنفيذ ← الصيانة"]}, "correct": 1, "ex": "الإجابة ب: الترتيب الصحيح: تحليل المشكلة ثم التصميم ثم التطوير ثم التنفيذ ثم الصيانة (صفحة 5، ويظهر كدورة في صفحة 11)."}, {"id": 15, "page": 6, "type": "mcq", "en": "What does IPO stand for?", "ar": "ماذا تعني IPO؟", "opts": {"en": ["A. Information–Program–Operation", "B. Input–Program–Output", "C. Instruction–Process–Operation", "D. Input–Process–Output"], "ar": ["أ. Information–Program–Operation", "ب. Input–Program–Output", "ج. Instruction–Process–Operation", "د. Input–Process–Output"]}, "correct": 3, "ex": "الإجابة د: IPO = Input–Process–Output أي المدخلات ثم المعالجة ثم المخرجات (صفحة 6)."}, {"id": 16, "page": 6, "type": "mcq", "en": "In the IPO model, what does Process represent?", "ar": "في نموذج IPO، ماذا تمثّل المعالجة (Process)؟", "opts": {"en": ["A. The data the program receives", "B. The calculations or decisions applied to the input", "C. The results shown to the user", "D. Deploying the software to users"], "ar": ["أ. البيانات التي يستقبلها البرنامج", "ب. العمليات الحسابية أو القرارات المطبَّقة على المدخلات", "ج. النتائج المعروضة للمستخدم", "د. نشر البرنامج للمستخدمين"]}, "correct": 1, "ex": "الإجابة ب: Process هي الحسابات أو القرارات المطبقة على المدخلات. المدخلات هي ما يستقبله البرنامج، والمخرجات هي النتائج المعروضة (صفحة 6)."}, {"id": 17, "page": 7, "type": "mcq", "en": "Which tools are used to plan the solution in the Design phase?", "ar": "أي أدوات تُستخدم لتخطيط الحل في مرحلة التصميم (Design)؟", "opts": {"en": ["A. Algorithms, flowcharts, and pseudocode", "B. Deployment and user training", "C. Bug fixing and software updates", "D. Writing and testing the code"], "ar": ["أ. الخوارزميات ومخططات التدفق والشيفرة الوهمية", "ب. النشر وتدريب المستخدمين", "ج. إصلاح الأخطاء وتحديث البرنامج", "د. كتابة الكود واختباره"]}, "correct": 0, "ex": "الإجابة أ: مرحلة Design تخطط الحل باستخدام Algorithms وFlowcharts وPseudocode (صفحة 7)."}, {"id": 18, "page": 9, "type": "mcq", "en": "In which SDLC phase is the software deployed and the users trained?", "ar": "في أي مرحلة من SDLC يُنشر البرنامج ويُدرَّب المستخدمون؟", "opts": {"en": ["A. Design", "B. Development", "C. Implementation", "D. Maintenance"], "ar": ["أ. التصميم", "ب. التطوير", "ج. التنفيذ", "د. الصيانة"]}, "correct": 2, "ex": "الإجابة ج: Implementation (المرحلة 4) تعني نشر البرنامج وتدريب المستخدمين (صفحة 9)."}, {"id": 19, "page": 12, "type": "mcq", "en": "In Example 1 (area of a rectangle), what is the Process?", "ar": "في المثال الأول (مساحة المستطيل)، ما هي المعالجة (Process)؟", "opts": {"en": ["A. area = length + width", "B. area = 2(length + width)", "C. area = length ÷ width", "D. area = length × width"], "ar": ["أ. المساحة = الطول + العرض", "ب. المساحة = 2(الطول + العرض)", "ج. المساحة = الطول ÷ العرض", "د. المساحة = الطول × العرض"]}, "correct": 3, "ex": "الإجابة د: المدخلات length وwidth، والمعالجة area = length × width، والمخرج area. مثلًا 6 × 4 = 24 سم² (صفحة 12)."}, {"id": 20, "page": 13, "type": "mcq", "en": "In Example 2, if length = 6 cm and width = 4 cm, what is the perimeter of the rectangle?", "ar": "في المثال الثاني، إذا كان الطول 6 سم والعرض 4 سم فما محيط المستطيل؟", "opts": {"en": ["A. 20 cm", "B. 10 cm", "C. 24 cm", "D. 48 cm"], "ar": ["أ. 20 سم", "ب. 10 سم", "ج. 24 سم", "د. 48 سم"]}, "correct": 0, "ex": "الإجابة أ: المحيط = 2 × (الطول + العرض) = 2 × (6 + 4) = 20 سم (صفحة 13)."}];
+const N=QUESTIONS.length;
+
+
+const successPhrases = ["أحسنت عبدالعزيز كمّل يا بطل! 🏆","ممتاز يا عبدالعزيز! أنت نجم البرمجة 🌟","برافو عبدالعزيز! استمر على هذا التألق 🚀","عاش يا وحش! إجابة ملكية 👑","أسطوري يا عبدالعزيز! الكويز لك بإذن الله 💎","ما شاء الله عليك! عقلك برمجي ذهبي ✨"];
+const failPhrases = ["حاول مرة أخرى يا عبدالعزيز، أنت تقدر! 💪","لا بأس يا بطل، ركّز وحاول مجددًا 🔄","قريب جدًا! المحاولة القادمة لك يا عبدالعزيز 🎯","الفشل أول خطوة للنجاح، حاول مرة أخرى ❤️‍🔥"];
+const quotes = ["«SDLC = تحليل المشكلة ← التصميم ← التطوير ← التنفيذ ← الصيانة»", "«IPO = Input ← Process ← Output»", "«خطّط قبل أن تكتب الكود: Design قبل Development»", "«Implementation = نشر البرنامج وتدريب المستخدمين»", "«Maintenance = إصلاح الأخطاء وتحديث البرنامج»", "«مساحة المستطيل = الطول × العرض ومحيطه = 2(الطول + العرض)»", "«الممارسة + التغذية الراجعة = إتقان البرمجة — كن مبرمجًا قويًا يا عبدالعزيز»"];
+let qi=0;
+let state = QUESTIONS.map(()=>({chosen:null,first:null,attempts:0,done:false,skipped:false,firstCorrect:null}));
+let translated = new Set();
+let translateAll=false;
+let bookmarked=new Set();
+let mode='train';
+let soundOn=true;
+let xp=0, streak=0, bestStreak=0, correctFirst=0;
+let seconds=0, timerInt=null, started=false;
+let filter='all', showOnlyWrong=false;
+let audioCtx=null;
+let charts=[];
+
+/* AUDIO */
+function ctx(){ if(!audioCtx) audioCtx=new (window.AudioContext||window.webkitAudioContext)(); if(audioCtx.state==='suspended') audioCtx.resume(); return audioCtx; }
+function tone(f,t,d,type='sine',v=.22,when=0){ if(!soundOn) return; try{ const c=ctx(),o=c.createOscillator(),g=c.createGain(); o.type=type;o.frequency.value=f; const s=c.currentTime+when; g.gain.setValueAtTime(0.0001,s); g.gain.exponentialRampToValueAtTime(v,s+.02); g.gain.exponentialRampToValueAtTime(0.0001,s+d); o.connect(g);g.connect(c.destination);o.start(s);o.stop(s+d+.05);}catch(e){} }
+function playClick(){ tone(600,0,.12,'sine',.12); }
+function playSuccess(){ if(!soundOn) return; [523,659,784,1046,1318].forEach((f,i)=>tone(f,0,.35,'triangle',.22,i*.09)); tone(2093,0,.5,'sine',.12,.5); setTimeout(()=>{ [1046,1318,1568].forEach((f,i)=>tone(f,0,.3,'sine',.15,i*.07)); },450); }
+function playFail(){ if(!soundOn) return; tone(220,0,.3,'sawtooth',.12); tone(174,0,.4,'sawtooth',.12,.15); }
+function playFinish(){ if(!soundOn) return; [523,523,523,659,784,1046,784,1046,1318,1568,2093].forEach((f,i)=>tone(f,0,.35,'triangle',.2,i*.13)); }
+function toggleSound(){ soundOn=!soundOn; document.getElementById('soundBtn').textContent=soundOn?'🔊':'🔇'; if(soundOn) playClick(); toast(soundOn?'🔊 تم تفعيل الأصوات التحفيزية':'🔇 تم كتم الصوت'); }
+
+/* HELPERS */
+function scrollToQuiz(){ document.getElementById('quizSection').scrollIntoView({behavior:'smooth'}); if(!started) startTimer(); playClick(); }
+function setMode(m){ mode=m; playClick(); const t=document.getElementById('modeTrain'),e=document.getElementById('modeExam'); if(m==='train'){ t.classList.add('border-[#D4AF37]'); t.classList.remove('border-transparent'); e.classList.remove('border-[#D4AF37]'); e.classList.add('border-transparent'); t.querySelector('div:last-child').textContent='● مُفعّل الآن'; t.querySelector('div:last-child').className='text-[11px] mt-2 font-black text-green-400'; document.getElementById('examLabel').textContent='○ اضغط للتفعيل'; document.getElementById('examLabel').className='text-[11px] mt-2 font-black text-white/40'; toast('🎓 وضع التدريب: يمكنك المحاولة مجددًا للتعلم'); } else { e.classList.add('border-[#D4AF37]'); e.classList.remove('border-transparent'); t.classList.remove('border-[#D4AF37]'); t.classList.add('border-transparent'); document.getElementById('examLabel').textContent='● مُفعّل الآن'; document.getElementById('examLabel').className='text-[11px] mt-2 font-black text-green-400'; toast('⏱️ وضع الكويز الحقيقي: محاولة واحدة فقط يا بطل!'); } }
+function startTimer(){ if(started) return; started=true; timerInt=setInterval(()=>{ seconds++; const m=String(Math.floor(seconds/60)).padStart(2,'0'),s=String(seconds%60).padStart(2,'0'); document.getElementById('timerHero').textContent=`${m}:${s}`; },1000); }
+function fmt(s){ return `${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`; }
+function toast(msg){ const w=document.getElementById('toastWrap'); const d=document.createElement('div'); d.className='toast pointer-events-auto glass gold-border rounded-2xl px-5 py-3 font-bold text-sm text-center shadow-2xl'; d.innerHTML=msg; w.appendChild(d); setTimeout(()=>{ d.style.opacity='0'; d.style.transform='translateY(10px)'; setTimeout(()=>d.remove(),400); },2600); }
+function goldConfettiBig(){ const end=Date.now()+1200; (function f(){ confetti({particleCount:6,angle:60,spread:60,origin:{x:0},colors:['#D4AF37','#F5D67B','#FFF6C8','#fff']}); confetti({particleCount:6,angle:120,spread:60,origin:{x:1},colors:['#D4AF37','#F5D67B','#FFF6C8','#fff']}); if(Date.now()<end) requestAnimationFrame(f); })(); confetti({particleCount:120,spread:100,origin:{y:.6},colors:['#D4AF37','#F5D67B','#ffffff','#22c55e']}); }
+function smallConfetti(){ confetti({particleCount:45,spread:70,origin:{y:.7},colors:['#D4AF37','#F5D67B','#fff','#22c55e']}); }
+
+/* RENDER */
+function renderQuestion(){
+const q=QUESTIONS[qi], st=state[qi];
+document.getElementById('qCounter').textContent=`السؤال ${qi+1} / ${N}`;
+document.getElementById('heroQpos').textContent=qi+1;
+document.getElementById('qPageBadge').textContent=`📄 صفحة ${q.page}`;
+document.getElementById('qTypeBadge').textContent=q.type==='tf'?'صح / خطأ • True / False':'اختياري • Multiple Choice';
+document.getElementById('qEn').innerHTML=`<span class="text-[#F5D67B] font-black">Q${q.id}.</span> ${q.en}`;
+const showTr = translateAll || translated.has(qi);
+document.getElementById('qArBox').classList.toggle('hidden',!showTr);
+document.getElementById('qAr').textContent=q.ar;
+document.getElementById('trBtn').textContent=showTr?'🙈 إخفاء الترجمة':'🌐 ترجم';
+document.getElementById('trBtn').className=showTr?'rounded-xl px-4 py-2.5 font-black text-sm bg-white/15 border border-[#D4AF37]':'rounded-xl px-4 py-2.5 font-black text-sm btn-gold';
+document.getElementById('bmBtn').textContent=bookmarked.has(qi)?'⭐':'🤍';
+const ab=document.getElementById('attemptBadge');
+if(st.attempts>0 && !st.done){ ab.classList.remove('hidden'); ab.textContent=`🔄 المحاولة ${st.attempts+1}`; } else ab.classList.add('hidden');
+const grid=document.getElementById('optsGrid'); grid.innerHTML='';
+const letters=q.type==='tf'?['✓','✕']:['A','B','C','D'];
+q.opts.en.forEach((oe,i)=>{
+const b=document.createElement('button'); b.className='opt'; b.id=`opt${i}`;
+const isCorrectOpt = st.done && i===q.correct;
+const isWrongChosen = st.done && st.first!==null && st.chosen===i && i!==q.correct && mode==='exam';
+const isDisabledWrong = mode==='train' && st.wrongTried && st.wrongTried.includes(i);
+if(isCorrectOpt) b.classList.add('correct');
+if(isWrongChosen) b.classList.add('wrong');
+if(isDisabledWrong){ b.classList.add('dim'); b.disabled=true; }
+if(st.done && mode==='exam') b.disabled=true;
+if(st.done && mode==='train' && st.finalDone) b.disabled=true;
+b.innerHTML=`<span class="opt-letter">${letters[i]}</span><span class="flex-1"><span dir="ltr" class="block text-left font-pop font-semibold leading-7">${oe}</span><span class="block mt-1 text-[13px] font-bold ${showTr?'':'hidden'} text-[#F5D67B] opt-ar-trans">${q.opts.ar[i]}</span></span><span class="text-xl result-ico">${isCorrectOpt?'✅':(isWrongChosen?'❌':'')}</span>`;
+b.onclick=()=>answer(i);
+grid.appendChild(b);
+});
+// feedback
+const fb=document.getElementById('feedbackBox'), ex=document.getElementById('explainBox');
+fb.classList.add('hidden'); ex.classList.add('hidden');
+if(st.done){
+if(st.firstCorrect){ fb.classList.remove('hidden'); fb.className='mt-5 rounded-2xl p-5 text-center font-black text-lg pop feedback-ok'; fb.innerHTML=`🎉 ${st.successMsg||'أحسنت عبدالعزيز كمّل يا بطل! 🏆'}<div class="text-xs font-bold text-green-200 mt-1">إجابة صحيحة من ${st.attempts===0?'أول محاولة':'المحاولة '+(st.attempts+1)} • +${st.attempts===0?10:5} XP</div>`; }
+else if(mode==='exam'){ fb.classList.remove('hidden'); fb.className='mt-5 rounded-2xl p-5 text-center font-black text-lg pop feedback-bad'; fb.innerHTML=`💪 حاول مرة أخرى يا عبدالعزيز في السؤال القادم!<div class="text-sm mt-1">الإجابة الصحيحة: <b class="text-green-300">${q.opts.en[q.correct]}</b> • <b class="text-[#F5D67B]">${q.opts.ar[q.correct]}</b></div>`; }
+showExplain();
+if(st.finalDone && !st.firstCorrect){ fb.classList.remove('hidden'); fb.className='mt-5 rounded-2xl p-5 text-center font-black text-lg pop feedback-ok'; fb.innerHTML=`👏 أحسنت عبدالعزيز! وصلت للصح بعد التعلم 💡<div class="text-xs mt-1 text-white/70">أول إجابة كانت خاطئة (محسوبة للمراجعة) لكن إصرارك بطولي — أكمل!</div>`; }
+} else if(st.attempts>0){
+fb.classList.remove('hidden'); fb.className='mt-5 rounded-2xl p-5 text-center font-black text-lg pop feedback-bad'; fb.innerHTML=`${failPhrases[st.attempts%failPhrases.length]}<div class="text-sm text-white/70 mt-1">اختر إجابة أخرى يا بطل — أنت تقدر! 🔥</div>`;
+}
+updateProgress(); renderPalette();
+document.getElementById('qCard').classList.remove('shake');
+}
+function showExplain(){ const q=QUESTIONS[qi]; const ex=document.getElementById('explainBox'); ex.classList.remove('hidden'); ex.innerHTML=`<b class="text-[#F5D67B]">💡 الشرح الذهبي:</b> ${q.ex}<div class="mt-1 text-xs text-white/60">النموذجية: <b dir="ltr" class="text-green-300">${q.opts.en[q.correct]}</b> — <b class="text-[#F5D67B]">${q.opts.ar[q.correct]}</b></div>`; }
+
+function answer(i){
+startTimer(); playClick();
+const q=QUESTIONS[qi], st=state[qi];
+if(st.done && (mode==='exam' || st.finalDone)) return;
+if(st.wrongTried && st.wrongTried.includes(i)) return;
+if(st.first===null){ st.first=i; st.attempts=0; }
+else { st.attempts++; }
+if(i===q.correct){
+// correct
+if(st.first===i){ st.firstCorrect=true; correctFirst++; streak++; bestStreak=Math.max(bestStreak,streak); xp+=10; st.successMsg=successPhrases[Math.floor(Math.random()*successPhrases.length)]; }
+else { st.firstCorrect=false; streak=0; xp+=5; if(!st.successMsg) st.successMsg=successPhrases[Math.floor(Math.random()*successPhrases.length)]; }
+st.chosen=i; st.done=true; st.finalDone=true;
+playSuccess(); smallConfetti();
+if(streak>0 && streak%5===0){ goldConfettiBig(); showCheer(`🔥 سلسلة نارية ${streak} إجابات!`,`واصل يا عبدالعزيز! أنت تقترب من العلامة الكاملة بسرعة الصاروخ 🚀`); }
+else if(st.first===i && Math.random()<.28){ goldConfettiBig(); }
+toast(`✅ <span class="gold-text">أحسنت عبدالعزيز كمّل يا بطل!</span> 🏆`);
+document.getElementById('qCard').classList.add('pop');
+} else {
+// wrong
+playFail();
+document.getElementById('qCard').classList.remove('shake'); void document.getElementById('qCard').offsetWidth; document.getElementById('qCard').classList.add('shake');
+if(mode==='exam'){ st.chosen=i; st.firstCorrect=false; st.done=true; st.finalDone=true; streak=0; toast(`❌ <b>حاول مرة أخرى</b> يا عبدالعزيز في القادم! 💪`); }
+else {
+if(!st.wrongTried) st.wrongTried=[];
+st.wrongTried.push(i);
+if(st.first!==i || true){ if(st.wrongTried.length>= (q.type==='tf'?1:2) && q.type!=='tf' && st.wrongTried.length>=3){ st.chosen=q.correct; st.done=true; st.finalDone=true; st.firstCorrect=false; streak=0; } }
+toast(`❌ <b>حاول مرة أخرى</b> يا عبدالعزيز! 🔄`);
+if(q.type==='tf'){ /* second try will be correct */ }
+}
+}
+updateHUD(); renderQuestion();
+if(state[qi].done){ setTimeout(()=>{ if(qi<N-1 && document.getElementById('reportSection').classList.contains('hidden')){ /* stay, let user click next */ } },600); }
+}
+function nextQ(){ playClick(); if(qi<N-1){ qi++; renderQuestion(); document.getElementById('quizSection').scrollIntoView({behavior:'smooth',block:'start'}); } else toast('🏁 هذا آخر سؤال — اضغط إنهاء لعرض تقريرك الملكي'); }
+function prevQ(){ playClick(); if(qi>0){ qi--; renderQuestion(); } }
+function skipQ(){ playClick(); state[qi].skipped=true; toast('⏭️ تم تخطي السؤال — يمكنك العودة له من الخريطة'); if(qi<N-1){ qi++; renderQuestion(); } updateProgress(); renderPalette(); }
+function toggleTranslateCurrent(){ playClick(); if(translated.has(qi)) translated.delete(qi); else translated.add(qi); renderQuestion(); }
+function translateAllToggle(){ playClick(); translateAll=!translateAll; toast(translateAll?'🌐 تم تفعيل الترجمة العربية لجميع الأسئلة بجانب الإنجليزية':'🌐 تم إخفاء الترجمات'); renderQuestion(); }
+function toggleBookmark(){ playClick(); if(bookmarked.has(qi)) bookmarked.delete(qi); else { bookmarked.add(qi); toast('⭐ تمت الإضافة للمفضلة'); } renderQuestion(); renderPalette(); }
+function reviewBookmarks(){ playClick(); if(bookmarked.size===0){ toast('⭐ لا توجد أسئلة مفضلة بعد — اضغط 🤍 لحفظ سؤال'); return; } filter='bm'; renderPalette(); document.getElementById('paletteCard').scrollIntoView({behavior:'smooth'}); }
+function setFilter(f){ playClick(); filter=f; document.querySelectorAll('.filter-btn').forEach(b=>{ if(b.dataset.f===f){ b.className='filter-btn px-3 py-1.5 rounded-lg bg-[#D4AF37] text-black'; } else { b.className='filter-btn px-3 py-1.5 rounded-lg bg-white/10'; } }); renderPalette(); }
+function updateHUD(){ document.getElementById('hdrScore').textContent=xp; document.getElementById('statCorrect').textContent=correctFirst; const wrongFirst=state.filter(s=>s.firstCorrect===false).length; document.getElementById('statWrong').textContent=wrongFirst; document.getElementById('statStreak').textContent=streak+' 🔥'; document.getElementById('xpNum').textContent=xp; const lvl=Math.floor(xp/100)+1; document.getElementById('levelNum').textContent=lvl; document.getElementById('xpBar').style.width=((xp%100))+'%'; }
+function updateProgress(){ const answered=state.filter(s=>s.done).length; const pct=Math.round(answered/N*100); document.getElementById('quizProgress').style.width=Math.max(2,pct)+'%'; document.getElementById('topProgress').style.width=pct+'%'; }
+function renderPalette(){ const p=document.getElementById('palette'); p.innerHTML=''; QUESTIONS.forEach((q,idx)=>{ const st=state[idx]; let show=true; if(filter==='ok' && !(st.done&&st.firstCorrect)) show=false; if(filter==='bad' && !(st.done&&st.firstCorrect===false)) show=false; if(filter==='un' && st.done) show=false; if(filter==='bm' && !bookmarked.has(idx)) show=false; if(!show) return; const b=document.createElement('button'); b.textContent=idx+1; b.className='pal-btn'+(idx===qi?' current':'')+((st.done&&st.firstCorrect)?' ok':(st.done&&st.firstCorrect===false)?' bad':(st.skipped&&!st.done)?' skip':''); if(bookmarked.has(idx)) b.textContent+='•'; b.title=`Q${idx+1} - صفحة ${q.page}`; b.onclick=()=>{ playClick(); qi=idx; renderQuestion(); }; p.appendChild(b); }); }
+
+/* CHEER */
+function showCheer(t,s){ document.getElementById('bigCheerTitle').textContent=t; document.getElementById('bigCheerSub').textContent=s; const o=document.getElementById('bigCheer'); o.classList.remove('hidden'); o.classList.add('flex'); }
+function closeCheer(){ const o=document.getElementById('bigCheer'); o.classList.add('hidden'); o.classList.remove('flex'); playClick(); }
+
+/* FINISH & REPORT */
+function confirmFinish(){ playClick(); const un=state.filter(s=>!s.done).length; if(un>0){ if(!confirm(`يا عبدالعزيز، لديك ${un} سؤالًا غير مجاب. هل تريد إنهاء الاختبار وعرض النتيجة الآن؟`)) return; } finish(); }
+function finish(){ clearInterval(timerInt); playFinish(); goldConfettiBig(); setTimeout(goldConfettiBig,800);
+const correct=state.filter(s=>s.firstCorrect===true).length;
+const wrong=state.filter(s=>s.firstCorrect===false).length;
+const skipped=state.filter(s=>!s.done).length;
+const pct=Math.round(correct/N*100);
+document.getElementById('reportSection').classList.remove('hidden');
+document.getElementById('rCorrect').textContent=correct;
+document.getElementById('rWrong').textContent=wrong;
+document.getElementById('rTime').textContent=fmt(seconds);
+document.getElementById('rStreak').textContent=bestStreak+' 🔥';
+document.getElementById('finalPct').textContent=pct+'%';
+document.getElementById('reportSubtitle').textContent=`أكملت ${N} سؤالًا في ${fmt(seconds)} • صح من أول مرة: ${correct} • تحتاج مراجعة: ${wrong} • متخطّى: ${skipped}`;
+let grade,msg;
+if(pct>=90){ grade='🏆 ممتاز مع مرتبة الشرف'; msg=`أسطوري يا عبدالعزيز! ${correct}/${N} من أول مرة — أحسنت كمّل يا بطل! أنت جاهز للكويز بنسبة 100% 👑🔥`; }
+else if(pct>=80){ grade='🌟 ممتاز'; msg=`رائع يا عبدالعزيز! ${correct}/${N} — أحسنت كمّل يا بطل! مراجعة سريعة للأخطاء وستكون علامتك كاملة 💎`; }
+else if(pct>=70){ grade='👏 جيد جدًا'; msg=`أداء بطولي يا عبدالعزيز! ${correct}/${N} — استمر! راجع الأسئلة الخاطئة بالأسفل وستتفوق 🚀`; }
+else if(pct>=60){ grade='💪 جيد'; msg=`بداية قوية يا عبدالعزيز! ${correct}/${N} — حاول مرة أخرى وستتحسن كثيرًا! راجع الشرح لكل سؤال 📚`; }
+else { grade='📚 يحتاج تدريب'; msg=`لا تستسلم يا بطل! ${correct}/${N} — كل عظيم بدأ من هنا. راجع الأخطاء ثم أعد الاختبار وستبهر الجميع ❤️‍🔥`; }
+document.getElementById('gradeBadge').textContent=grade;
+const fm=document.getElementById('finalMessage'); fm.textContent=msg;
+const circ=document.getElementById('scoreCircle'); const off=326.7-(326.7*pct/100); setTimeout(()=>circ.style.strokeDashoffset=off,300);
+let best=parseInt(localStorage.getItem('abz_best_ch2')||'0'); if(pct>best){ localStorage.setItem('abz_best_ch2',pct); best=pct; toast('🎉 رقم قياسي جديد! best: '+pct+'%'); }
+document.getElementById('bestScoreHero').textContent=best+'%';
+showCheer(pct>=60?'أحسنت عبدالعزيز كمّل يا بطل! 🏆':'حاول مرة أخرى يا بطل! 💪', msg);
+renderReportList(); drawCharts(correct,wrong,skipped);
+document.getElementById('reportSection').scrollIntoView({behavior:'smooth'});
+}
+function toggleWrongBtn(btn){ document.querySelectorAll('#reportSection .no-print button').forEach(b=>b.classList.replace('btn-gold','btn-ghost')); }
+function renderReportList(){
+const wrap=document.getElementById('reportList'); wrap.innerHTML='';
+QUESTIONS.forEach((q,idx)=>{
+const st=state[idx];
+const isOk=st.firstCorrect===true, isBad=st.firstCorrect===false, isSkip=!st.done;
+if(showOnlyWrong && !isBad) return;
+const userTxt = st.first===null?'— لم يُجب —':`${q.opts.en[st.first]} — ${q.opts.ar[st.first]}`;
+const modelTxt=`${q.opts.en[q.correct]} — ${q.opts.ar[q.correct]}`;
+const card=document.createElement('div');
+card.className=`glass rounded-2xl p-5 border-r-8 ${isOk?'!border-green-500':isBad?'!border-red-500':'!border-yellow-500'}`;
+card.innerHTML=`
+<div class="flex flex-wrap items-center justify-between gap-2">
+<div class="flex items-center gap-2 flex-wrap">
+<span class="font-black btn-gold rounded-lg px-3 py-1 text-sm">Q${q.id}</span>
+<span class="text-xs font-bold bg-white/10 rounded-lg px-3 py-1">📄 صفحة ${q.page}</span>
+<span class="text-xs font-bold rounded-lg px-3 py-1 ${q.type==='tf'?'bg-purple-500/20 text-purple-200':'bg-blue-500/20 text-blue-200'}">${q.type==='tf'?'صح / خطأ':'اختياري'}</span>
+${bookmarked.has(idx)?'<span class="text-xs">⭐</span>':''}
+</div>
+<span class="font-black text-sm px-4 py-1.5 rounded-full ${isOk?'bg-green-500/20 text-green-300 border border-green-500':isBad?'bg-red-500/20 text-red-300 border border-red-500':'bg-yellow-500/20 text-yellow-200 border border-yellow-500'}">${isOk?'✅ صح':'❌ خطأ / مراجعة'}</span>
+</div>
+<div dir="ltr" class="text-left font-pop font-semibold mt-3 leading-7 text-[15px]">${q.en}</div>
+<div class="ar-box p-3 mt-2 text-sm font-bold leading-7">🇸🇦 ${q.ar}</div>
+<div class="grid md:grid-cols-2 gap-3 mt-3 text-sm">
+<div class="rounded-xl p-3 border ${isOk?'bg-green-500/10 border-green-500/40':'bg-red-500/10 border-red-500/40'}"><div class="text-xs font-black opacity-70">إجابة عبدالعزيز (أول محاولة):</div><div class="font-bold mt-1" dir="ltr">${st.first===null?'—':q.opts.en[st.first]}</div><div class="font-bold text-[#F5D67B]">${st.first===null?'لم يُجب':q.opts.ar[st.first]}</div></div>
+<div class="rounded-xl p-3 bg-green-500/10 border border-green-500/40"><div class="text-xs font-black text-green-300">✅ الإجابة النموذجية:</div><div class="font-bold mt-1" dir="ltr">${q.opts.en[q.correct]}</div><div class="font-bold text-[#F5D67B]">${q.opts.ar[q.correct]}</div></div>
+</div>
+<div class="mt-2 text-xs leading-6 bg-black/30 rounded-xl p-3 border border-white/10">💡 <b>الشرح:</b> ${q.ex} ${st.attempts>0?`• عدد المحاولات: ${st.attempts+1}`:''}</div>
+<div class="flex gap-2 mt-3 no-print">
+<button onclick="goToQ(${idx})" class="btn-ghost rounded-lg px-4 py-2 text-xs font-bold">🔁 العودة للسؤال</button>
+<button onclick="toggleBmReport(${idx},this)" class="btn-ghost rounded-lg px-4 py-2 text-xs font-bold">${bookmarked.has(idx)?'⭐ مفضلة':'🤍 حفظ'}</button>
+</div>`;
+wrap.appendChild(card);
+});
+if(wrap.children.length===0){ wrap.innerHTML=`<div class="glass rounded-2xl p-10 text-center font-black text-green-300 text-xl">🎉 لا توجد أخطاء يا بطل! كل إجاباتك صحيحة — أحسنت عبدالعزيز! 👑</div>`; }
+}
+function goToQ(i){ qi=i; renderQuestion(); document.getElementById('quizSection').scrollIntoView({behavior:'smooth'}); playClick(); }
+function toggleBmReport(i,btn){ if(bookmarked.has(i)) bookmarked.delete(i); else bookmarked.add(i); renderReportList(); renderPalette(); playClick(); }
+function drawCharts(c,w,s){ charts.forEach(ch=>ch.destroy()); charts=[]; const d=document.getElementById('chartDoughnut'); charts.push(new Chart(d,{type:'doughnut',data:{labels:['صحيحة','تحتاج مراجعة','متخطّى'],datasets:[{data:[c,w,s],backgroundColor:['#22c55e','#ef4444','#D4AF37'],borderWidth:0}]},options:{plugins:{legend:{labels:{color:'#fff',font:{family:'Cairo',weight:'bold'}}}}}})); const tfC=state.slice(0,10).filter(x=>x.firstCorrect).length, tfW=10-tfC-state.slice(0,10).filter(x=>!x.done).length; const mcC=state.slice(10).filter(x=>x.firstCorrect).length; charts.push(new Chart(document.getElementById('chartBars'),{type:'bar',data:{labels:['صح/خطأ Q1-10','اختياري Q11-20'],datasets:[{label:'صحيحة',data:[tfC,mcC],backgroundColor:'#22c55e',borderRadius:10},{label:'خاطئة/متخطّى',data:[10-tfC,10-mcC],backgroundColor:'#ef4444',borderRadius:10}]},options:{scales:{x:{ticks:{color:'#fff'}},y:{ticks:{color:'#fff'},beginAtZero:true,max:10}},plugins:{legend:{labels:{color:'#fff'}}}}})); }
+function restartQuiz(){ if(!confirm('هل تريد إعادة الاختبار من جديد يا عبدالعزيز؟')) return; state=QUESTIONS.map(()=>({chosen:null,first:null,attempts:0,done:false,skipped:false,firstCorrect:null})); qi=0; xp=0; streak=0; bestStreak=0; correctFirst=0; seconds=0; started=false; clearInterval(timerInt); document.getElementById('timerHero').textContent='00:00'; document.getElementById('reportSection').classList.add('hidden'); showOnlyWrong=false; updateHUD(); renderQuestion(); scrollToQuiz(); toast('🔄 بداية جديدة موفقة يا بطل!'); }
+function shareResult(){ const c=state.filter(s=>s.firstCorrect).length; const t=`🏆 نتيجة البطل عبدالعزيز المعشوق في مراجعة أساسيات تطوير البرمجيات Chapter 2: ${c}/${N} (${Math.round(c/N*100)}%) — أحسنت عبدالعزيز كمّل يا بطل! 👑`; if(navigator.share){ navigator.share({title:'نتيجتي',text:t}).catch(()=>{}); } else { navigator.clipboard.writeText(t).then(()=>toast('📋 تم نسخ النتيجة للمشاركة!')); } }
+
+
+/* CONCEPT MAP (EN default + translate) */
+const CM_BRANCHES=[
+{c:'#D4AF37',ic:'💻',t:['What is Software Development?','ما هو تطوير البرمجيات؟'],
+ n:[
+ ['Software Development','The process of creating software to solve problems and automate tasks.','عملية إنشاء البرمجيات لحل المشكلات وأتمتة المهام.'],
+ ['It includes','Understanding requirements • Designing a solution • Writing code • Testing and maintaining the software.','فهم المتطلبات • تصميم الحل • كتابة الكود • اختبار البرمجيات وصيانتها.'],
+ ['Examples','Mobile apps • Websites • ERP systems • Desktop applications.','تطبيقات الجوال • المواقع الإلكترونية • أنظمة ERP • تطبيقات سطح المكتب.']],
+ f:['Requirements','Design','Code','Test & Maintain']},
+{c:'#7C3AED',ic:'🔄',t:['SDLC – Software Development Life Cycle','دورة حياة تطوير البرمجيات SDLC'],
+ n:[
+ ['SDLC','A structured process used to build software systems.','عملية منظمة تُستخدم لبناء أنظمة البرمجيات.'],
+ ['Why it is important','Reduces mistakes by planning before coding • Improves quality through testing and reviews • Makes software easier to maintain and improve • Ensures the final system matches user needs.','تقلل الأخطاء بالتخطيط قبل كتابة الكود • تحسّن الجودة بالاختبار والمراجعة • تجعل الصيانة والتطوير أسهل • تضمن أن النظام النهائي يطابق احتياجات المستخدم.'],
+ ['Five steps','1 Problem Analysis • 2 Design • 3 Development • 4 Implementation • 5 Maintenance (drawn as a cycle).','1 تحليل المشكلة • 2 التصميم • 3 التطوير • 4 التنفيذ • 5 الصيانة (تُرسم على شكل دورة).']],
+ f:['Analysis','Design','Development','Implementation','Maintenance']},
+{c:'#0EA5E9',ic:'🔍',t:['Phase 1: Problem Analysis','المرحلة 1: تحليل المشكلة'],
+ n:[
+ ['Goal','Understand the problem and the user needs.','فهم المشكلة واحتياجات المستخدم.'],
+ ['IPO model','Input–Process–Output is used to organize the solution.','يُستخدم نموذج Input–Process–Output لتنظيم الحل.'],
+ ['Input','Data the program receives.','البيانات التي يستقبلها البرنامج.'],
+ ['Process','Calculations or decisions applied to the input.','الحسابات أو القرارات المطبَّقة على المدخلات.'],
+ ['Output','Results shown to the user.','النتائج المعروضة للمستخدم.']],
+ f:['Input','Process','Output']},
+{c:'#22C55E',ic:'📐',t:['Phases 2 & 3: Design and Development','المرحلتان 2 و3: التصميم والتطوير'],
+ n:[
+ ['Phase 2: Design','Plan the solution using algorithms, flowcharts, and pseudocode.','تخطيط الحل باستخدام الخوارزميات ومخططات التدفق والشيفرة الوهمية.'],
+ ['Phase 3: Development','Write and test the code.','كتابة الكود واختباره.'],
+ ['Order matters','Plan first (Design), then build (Development) — planning before coding reduces mistakes.','نخطط أولًا (التصميم) ثم نبني (التطوير) — فالتخطيط قبل كتابة الكود يقلل الأخطاء.']],
+ f:['Algorithm','Flowchart','Pseudocode','Code & Test']},
+{c:'#F97316',ic:'🚀',t:['Phases 4 & 5: Implementation and Maintenance','المرحلتان 4 و5: التنفيذ والصيانة'],
+ n:[
+ ['Phase 4: Implementation','Deploy the software and train the users.','نشر البرنامج وتدريب المستخدمين.'],
+ ['Phase 5: Maintenance','Fix errors and update the software.','إصلاح الأخطاء وتحديث البرنامج.'],
+ ['The cycle diagram','1 Analysis → 2 Design → 3 Development → 4 Implementation → 5 Maintenance and review.','1 التحليل ← 2 التصميم ← 3 التطوير ← 4 التنفيذ ← 5 الصيانة والمراجعة.']],
+ f:['Deploy','Train users','Fix errors','Update']},
+{c:'#EC4899',ic:'🧮',t:['IPO Worked Examples','أمثلة محلولة على IPO'],
+ n:[
+ ['Example 1: Area of a rectangle','Input: length, width • Process: area = length × width • Output: area • If length = 6 cm and width = 4 cm → area = 6 × 4 = 24 cm².','المدخلات: الطول والعرض • المعالجة: المساحة = الطول × العرض • المخرج: المساحة • إذا كان الطول 6 سم والعرض 4 سم ← المساحة = 6 × 4 = 24 سم².'],
+ ['Example 2: Perimeter of a rectangle','Input: length, width • Process: perimeter = 2(length + width) • Output: perimeter • 2(6 + 4) = 20 cm.','المدخلات: الطول والعرض • المعالجة: المحيط = 2(الطول + العرض) • المخرج: المحيط • 2(6 + 4) = 20 سم.'],
+ ['Example 3: Sum of two numbers','Input: num1, num2 • Process: sum = num1 + num2 • Output: sum • If num1 = 5 and num2 = 4 → sum = 9.','المدخلات: num1 وnum2 • المعالجة: sum = num1 + num2 • المخرج: sum • إذا كان num1 = 5 وnum2 = 4 ← المجموع = 9.']],
+ f:['Input','Process','Output']}
+];
+const CM_UI={
+ badge:['🧠 Stage 1 • Review before the quiz','🧠 المرحلة الأولى • راجع قبل الاختبار'],
+ title:['Chapter 2 <span class="gold-text">Concept Map</span>','خارطة مفاهيم <span class="gold-text">Chapter 2</span>'],
+ desc:['We summarized the chapter in 6 branches. Read each branch, then press <b class="text-[#F5D67B]">“✔ I reviewed this branch”</b>, and then start the questions.','لخّصنا لك المفاهيم الأساسية للفصل في 6 فروع. اقرأ كل فرع ثم اضغط <b class="text-[#F5D67B]">«✔ راجعت هذا الفرع»</b>، وبعدها ابدأ حل الأسئلة.'],
+ btn:['🌐 ترجم الملخص للعربية','🇬🇧 Show English'],
+ prog:['Review progress','تقدّم المراجعة'],
+ goalsT:['🎯 Chapter objectives — by the end of this chapter you will be able to:','🎯 أهداف الفصل — بنهاية الفصل ستكون قادرًا على:'],
+ goals:['Define software development • Explain the SDLC • Identify the development phases • Apply the IPO model','تعريف تطوير البرمجيات • شرح SDLC • تحديد مراحل التطوير • تطبيق نموذج IPO'],
+ branch:['Branch','الفرع'],
+ mark:['✔ I reviewed this branch','✔ راجعت هذا الفرع'],
+ done:['✅ Reviewed','✅ تمت المراجعة'],
+ quickT:['⚡ Quick summary','⚡ الخلاصة السريعة'],
+ go:['أنا جاهز — ابدأ حل الأسئلة','أنا جاهز — ابدأ حل الأسئلة']
+};
+let cmLang=0; const cmReviewed=new Set();
+function flowHTML(arr){ return arr.map(x=>`<span class="st">${x}</span>`).join('<span class="ar">→</span>'); }
+function renderCM(){
+ const k=cmLang, U=CM_UI, rtl=k===1;
+ document.getElementById('cmBadge').textContent=U.badge[k];
+ document.getElementById('cmTitle').innerHTML=U.title[k];
+ document.getElementById('cmDesc').innerHTML=U.desc[k];
+ document.getElementById('cmTrBtn').textContent=U.btn[k];
+ document.getElementById('cmProgLabel').textContent=U.prog[k];
+ document.getElementById('cmGoalsT').textContent=U.goalsT[k];
+ document.getElementById('cmGoals').textContent=U.goals[k];
+ document.getElementById('cmQuickT').textContent=U.quickT[k];
+ document.getElementById('cmHead').dir=rtl?'rtl':'ltr';
+ document.getElementById('cmGrid').dir=rtl?'rtl':'ltr';
+ document.getElementById('cmGoalsBox').dir=rtl?'rtl':'ltr';
+ document.getElementById('cmGrid').innerHTML=CM_BRANCHES.map((b,i)=>{
+  const n=i+1, done=cmReviewed.has(n);
+  return `<div class="cm-card glass ${done?'done':''}" style="border:1px solid ${b.c}66" id="cmb${n}" dir="${rtl?'rtl':'ltr'}">
+  <div class="flex items-center justify-between gap-2 mb-3"><div class="flex items-center gap-3"><div class="w-11 h-11 rounded-xl flex items-center justify-center text-xl font-black" style="background:${b.c};color:#0b0b1a">${n}</div><div><div class="text-[11px] font-black" style="color:${b.c}">${U.branch[k]} ${n}</div><div class="font-black leading-6 ${rtl?'':'font-pop'}">${b.ic} ${b.t[k]}</div></div></div></div>
+  <div class="grid gap-2">${b.n.map(x=>`<div class="cm-node"><b>${x[0]}</b><span ${rtl?'':'dir="ltr" style="text-align:left"'}>${x[k+1]}</span></div>`).join('')}</div>
+  <div class="cm-flow mt-3">${flowHTML(b.f)}</div>
+  <button onclick="markBranch(${n})" class="${done?'btn-gold':'btn-ghost'} w-full rounded-xl py-2 mt-4 text-sm font-black">${done?U.done[k]:U.mark[k]}</button></div>`;
+ }).join('');
+ document.getElementById('cmQuickFlow').innerHTML=`<span class="st">Analysis</span><span class="ar">→</span><span class="st">Design</span><span class="ar">→</span><span class="st">Development</span><span class="ar">→</span><span class="st">Implementation</span><span class="ar">→</span><span class="st">Maintenance</span><span class="ar">|</span><span class="st">IPO: Input</span><span class="ar">→</span><span class="st">Process</span><span class="ar">→</span><span class="st">Output</span>`;
+ document.getElementById('cmDone').textContent=cmReviewed.size;
+ document.getElementById('cmBar').style.width=(cmReviewed.size/CM_BRANCHES.length*100)+'%';
+}
+function toggleCM(){ cmLang=cmLang?0:1; try{playClick();}catch(e){} renderCM(); }
+function markBranch(n){
+ if(cmReviewed.has(n)) cmReviewed.delete(n); else { cmReviewed.add(n); try{playClick();}catch(e){} }
+ renderCM();
+ if(cmReviewed.size===CM_BRANCHES.length){ try{smallConfetti();}catch(e){} toast('🎉 أحسنت عبدالعزيز! راجعت كل فروع الخارطة — ابدأ الأسئلة الآن'); }
+}
+renderCM();
+
+
+/* WHATSAPP REPORT TO DR. MOHAMMED */
+const DR_WA='966540058614';
+function sendWhatsApp(){
+ const c=state.filter(x=>x.firstCorrect===true).length;
+ const w=state.filter(x=>x.firstCorrect===false).length;
+ const sk=state.filter(x=>!x.done).length;
+ const total=QUESTIONS.length;
+ const pct=Math.round(c/total*100);
+ const L=['A','B','C','D'];
+ const sh=(q,i)=> i===null||i===undefined ? '—' : (q.type==='tf' ? q.opts.ar[i] : L[i]);
+ const wrongLines=[];
+ QUESTIONS.forEach((q,idx)=>{ const st=state[idx]; if(st.firstCorrect!==true){ wrongLines.push('Q'+q.id+' (ص'+q.page+'): '+sh(q,st.first)+' ← الصحيح: '+sh(q,q.correct)); } });
+ let txt='السلام عليكم دكتور محمد 👋\n';
+ txt+='تقرير مراجعة CH2 – Fundamentals of Software Development\n';
+ txt+='الطالب: عبدالعزيز المعشوق\n';
+ txt+='━━━━━━━━━━\n';
+ txt+='النتيجة (من أول إجابة): '+c+' / '+total+' ('+pct+'%)\n';
+ txt+='✅ صحيحة: '+c+'  ❌ خاطئة: '+w+'  ⏭️ متخطّاة: '+sk+'\n';
+ txt+='⏱️ الزمن: '+fmt(seconds)+'  🔥 أفضل سلسلة: '+bestStreak+'\n';
+ txt+='━━━━━━━━━━\n';
+ if(wrongLines.length){ txt+='الأسئلة التي تحتاج مراجعة ('+wrongLines.length+'):\n'+wrongLines.join('\n')+'\n'; }
+ else { txt+='🎉 أجبت على جميع الأسئلة بشكل صحيح من أول مرة!\n'; }
+ const url='https://wa.me/'+DR_WA+'?text='+encodeURIComponent(txt);
+ const win=window.open(url,'_blank');
+ if(!win){ location.href=url; }
+}
+
+/* BG STARS */
+(function(){ const cv=document.getElementById('stars'),cx=cv.getContext('2d'); let W,H,pts=[]; function rs(){ W=cv.width=innerWidth; H=cv.height=innerHeight; pts=Array.from({length:110},()=>({x:Math.random()*W,y:Math.random()*H,r:Math.random()*1.8+.4,s:Math.random()*.4+.1,g:Math.random()>.85})); } rs(); addEventListener('resize',rs); (function an(){ cx.clearRect(0,0,W,H); pts.forEach(p=>{ p.y-=p.s; if(p.y<0)p.y=H; cx.beginPath(); cx.arc(p.x,p.y,p.r,0,7); cx.fillStyle=p.g?'rgba(245,214,123,.9)':'rgba(255,255,255,.5)'; cx.fill(); }); requestAnimationFrame(an); })(); })();
+
+/* QUOTES */
+let qi2=0; setInterval(()=>{ qi2=(qi2+1)%quotes.length; const el=document.getElementById('quoteText'); el.style.opacity=0; setTimeout(()=>{ el.textContent=quotes[qi2]; el.style.opacity=1; },300); },8000);
+
+/* KEYBOARD */
+document.addEventListener('keydown',e=>{ if(!document.getElementById('reportSection').classList.contains('hidden') && e.key==='Escape') closeCheer(); if(e.key>='1'&&e.key<='4'){ const q=QUESTIONS[qi]; const idx=parseInt(e.key)-1; if(idx<q.opts.en.length) answer(idx); } if(e.key==='t'||e.key==='T'||e.key==='f'||e.key==='F') toggleTranslateCurrent(); if(e.key==='ArrowLeft') nextQ(); if(e.key==='ArrowRight') prevQ(); });
+
+/* INIT */
+window.onload=function(){
+let p=0; const li=setInterval(()=>{ p+=12; document.getElementById('loadBar').style.width=Math.min(100,p)+'%'; if(p>=100){ clearInterval(li); setTimeout(()=>{ document.getElementById('preloader').style.opacity='0'; setTimeout(()=>document.getElementById('preloader').remove(),700); },300); } },120);
+document.getElementById('bestScoreHero').textContent=(localStorage.getItem('abz_best_ch2')||'0')+'%';
+updateHUD(); renderQuestion(); renderPalette();
+setTimeout(()=>toast('👑 أهلًا عبدالعزيز! اضغط <b>🌐 ترجم</b> بجانب أي سؤال لرؤية الترجمة العربية فورًا'),1800);
+};
+</script>
+</body>
+</html>
